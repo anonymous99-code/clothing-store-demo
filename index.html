@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAISON NOIR — Considered Clothing</title>
+<style>
+  :root{
+    --cream:#F7F4EF;
+    --panel:#FFFFFF;
+    --ink:#1A1A1A;
+    --muted:#7A7469;
+    --gold:#B08D57;
+    --gold-dim:#8F7040;
+    --line:#E5DFD3;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", Times, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:var(--sans);}
+  a{color:inherit;}
+
+  /* ---------- Nav ---------- */
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 44px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:var(--cream);z-index:20;
+  }
+  .logo{font-family:var(--serif);font-size:21px;letter-spacing:0.06em;}
+  .nav-links{display:flex;gap:30px;font-size:13px;color:var(--muted);}
+  .nav-links a{cursor:pointer;transition:color .15s ease;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .cart-btn{
+    position:relative;background:none;border:1px solid var(--ink);color:var(--ink);
+    font-family:var(--sans);font-size:13px;padding:9px 18px;border-radius:2px;cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .cart-btn:hover{background:var(--ink);color:var(--cream);}
+  .cart-count{
+    position:absolute;top:-8px;right:-8px;background:var(--gold);color:#241C0C;
+    font-size:11px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:96px 44px 84px;max-width:640px;
+  }
+  .hero .eyebrow{font-size:13px;color:var(--gold-dim);margin-bottom:18px;}
+  .hero h1{
+    font-family:var(--serif);font-size:46px;line-height:1.15;margin:0 0 22px;letter-spacing:-0.01em;
+  }
+  .hero p{font-size:15.5px;color:var(--muted);line-height:1.65;max-width:46ch;margin:0 0 28px;}
+  .hero button{
+    background:var(--ink);color:var(--cream);border:none;font-family:var(--sans);font-size:13.5px;
+    padding:14px 28px;cursor:pointer;letter-spacing:0.02em;transition:background .15s ease;
+  }
+  .hero button:hover{background:#333;}
+
+  /* ---------- Filters ---------- */
+  .filter-row{
+    display:flex;gap:10px;padding:0 44px 30px;flex-wrap:wrap;
+  }
+  .filter-chip{
+    font-family:var(--sans);font-size:12.5px;color:var(--muted);background:none;
+    border:1px solid var(--line);padding:8px 16px;border-radius:20px;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .filter-chip:hover{border-color:var(--gold-dim);color:var(--ink);}
+  .filter-chip.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+
+  /* ---------- Product grid ---------- */
+  .grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+    background:var(--line);
+    margin:0 44px 90px;border:1px solid var(--line);
+  }
+  @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.grid{grid-template-columns:1fr;margin:0 20px 60px;} .hero{padding:64px 20px 56px;} nav{padding:18px 20px;} .filter-row{padding:0 20px 24px;}}
+
+  .card{
+    background:var(--panel);padding:0;position:relative;display:flex;flex-direction:column;
+  }
+  .swatch{
+    aspect-ratio:4/5;position:relative;overflow:hidden;
+  }
+  .swatch .texture{position:absolute;inset:0;opacity:0.5;mix-blend-mode:overlay;}
+  .wish-btn{
+    position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+    background:rgba(255,255,255,0.85);border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink);
+    transition:transform .1s ease;
+  }
+  .wish-btn:hover{transform:scale(1.08);}
+  .wish-btn.active{color:var(--gold-dim);}
+  .card-body{padding:18px 18px 20px;flex:1;display:flex;flex-direction:column;}
+  .card-cat{font-size:11px;color:var(--gold-dim);margin-bottom:5px;}
+  .card-name{font-family:var(--serif);font-size:16.5px;margin:0 0 6px;line-height:1.3;}
+  .card-price{font-size:13.5px;color:var(--muted);margin:0 0 16px;}
+  .add-btn{
+    margin-top:auto;background:none;border:1px solid var(--ink);color:var(--ink);
+    font-family:var(--sans);font-size:12.5px;padding:10px;cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .add-btn:hover{background:var(--ink);color:var(--cream);}
+  .add-btn.added{background:var(--gold);border-color:var(--gold);color:#241C0C;}
+
+  /* ---------- Cart drawer ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,18,14,0.35);opacity:0;pointer-events:none;
+    transition:opacity .2s ease;z-index:30;
+  }
+  .overlay.show{opacity:1;pointer-events:auto;}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;background:var(--cream);
+    transform:translateX(100%);transition:transform .25s ease;z-index:31;
+    display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,0.08);
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{
+    padding:24px 26px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;
+  }
+  .drawer-head h2{font-family:var(--serif);font-size:19px;margin:0;}
+  .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+  .drawer-items{flex:1;overflow-y:auto;padding:10px 26px;}
+  .cart-row{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);}
+  .cart-swatch{width:60px;height:74px;flex:0 0 60px;border-radius:2px;}
+  .cart-info{flex:1;}
+  .cart-info .name{font-family:var(--serif);font-size:14.5px;margin-bottom:3px;}
+  .cart-info .price{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+  .qty-row{display:flex;align-items:center;gap:10px;}
+  .qty-btn{
+    width:22px;height:22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qty-val{font-size:13px;min-width:14px;text-align:center;}
+  .remove-btn{margin-left:auto;font-size:11.5px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;}
+  .empty-cart{padding:60px 0;text-align:center;color:var(--muted);font-size:13.5px;}
+
+  .drawer-foot{padding:22px 26px 26px;border-top:1px solid var(--line);}
+  .subtotal-row{display:flex;justify-content:space-between;font-size:14.5px;margin-bottom:16px;}
+  .subtotal-row b{font-family:var(--serif);font-size:17px;}
+  .checkout-btn{
+    width:100%;background:var(--ink);color:var(--cream);border:none;padding:15px;font-size:14px;
+    cursor:pointer;font-family:var(--sans);transition:background .15s ease;
+  }
+  .checkout-btn:hover{background:#333;}
+  .checkout-btn:disabled{background:#D8D2C4;color:#8B8676;cursor:not-allowed;}
+
+  /* ---------- Confirmation modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,18,14,0.45);display:none;align-items:center;justify-content:center;z-index:40;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:var(--panel);padding:40px 36px;max-width:380px;text-align:center;border-radius:2px;
+  }
+  .modal .mark{font-size:34px;color:var(--gold-dim);margin-bottom:16px;}
+  .modal h3{font-family:var(--serif);font-size:21px;margin:0 0 10px;}
+  .modal p{color:var(--muted);font-size:13.5px;line-height:1.55;margin:0 0 24px;}
+  .modal button{
+    background:var(--ink);color:var(--cream);border:none;padding:12px 26px;font-size:13px;cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">MAISON&nbsp;NOIR</div>
+  <div class="nav-links">
+    <a>New Arrivals</a><a>Outerwear</a><a>Knitwear</a><a>Accessories</a>
+  </div>
+  <div class="nav-right">
+    <button class="cart-btn" id="cart-open">Bag<span class="cart-count" id="cart-count" style="display:none;">0</span></button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Autumn / Winter Collection</div>
+  <h1>Clothing built to outlast the season it was made for.</h1>
+  <p>Natural fibers, considered construction, and a palette drawn from raw materials rather than trend reports. Ten pieces, worn for years.</p>
+  <button onclick="document.querySelector('.grid').scrollIntoView({behavior:'smooth'})">View the collection</button>
+</section>
+
+<div class="filter-row" id="filter-row"></div>
+<div class="grid" id="product-grid"></div>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2>Your Bag</h2>
+    <button class="close-btn" id="drawer-close">&times;</button>
+  </div>
+  <div class="drawer-items" id="drawer-items"></div>
+  <div class="drawer-foot">
+    <div class="subtotal-row"><span>Subtotal</span><b id="subtotal">$0</b></div>
+    <button class="checkout-btn" id="checkout-btn" disabled>Checkout</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="mark">&#10003;</div>
+    <h3>Order placed</h3>
+    <p id="modal-text">Thank you — your order has been received. This is a demo checkout, so nothing was actually charged.</p>
+    <button id="modal-close">Continue browsing</button>
+  </div>
+</div>
+
+<script>
+const PRODUCTS = [
+  {id:1,name:"Wool Overcoat",cat:"Outerwear",price:420,swatch:"linear-gradient(160deg,#2B2E33,#43474D)"},
+  {id:2,name:"Cashmere Crewneck",cat:"Knitwear",price:210,swatch:"linear-gradient(160deg,#C9BBA0,#E4D9C3)"},
+  {id:3,name:"Leather Gloves",cat:"Accessories",price:95,swatch:"linear-gradient(160deg,#5C3A2E,#7A4F3D)"},
+  {id:4,name:"Waxed Field Jacket",cat:"Outerwear",price:365,swatch:"linear-gradient(160deg,#3A4A3F,#59705F)"},
+  {id:5,name:"Merino Turtleneck",cat:"Knitwear",price:165,swatch:"linear-gradient(160deg,#38424F,#556478)"},
+  {id:6,name:"Silk Pocket Scarf",cat:"Accessories",price:75,swatch:"linear-gradient(160deg,#7A2E33,#A84B4F)"},
+  {id:7,name:"Suede Chelsea Boots",cat:"Footwear",price:340,swatch:"linear-gradient(160deg,#4A3324,#6B4A34)"},
+  {id:8,name:"Alpaca Cardigan",cat:"Knitwear",price:245,swatch:"linear-gradient(160deg,#726052,#94816E)"},
+  {id:9,name:"Full-Grain Belt",cat:"Accessories",price:110,swatch:"linear-gradient(160deg,#2A2521,#4A4038)"},
+  {id:10,name:"Shearling Vest",cat:"Outerwear",price:390,swatch:"linear-gradient(160deg,#8A7960,#B7A688)"},
+  {id:11,name:"Oxford Derby Shoes",cat:"Footwear",price:310,swatch:"linear-gradient(160deg,#20201E,#3D3D38)"},
+  {id:12,name:"Ribbed Wool Beanie",cat:"Accessories",price:58,swatch:"linear-gradient(160deg,#4C4A52,#6E6B76)"},
+];
+
+const CATEGORIES = ["All", ...new Set(PRODUCTS.map(p=>p.cat))];
+let activeCategory="All";
+let cart={};       // id -> qty
+let wishlist=new Set();
+
+// ---- filter chips ----
+const filterRow=document.getElementById("filter-row");
+CATEGORIES.forEach(cat=>{
+  const chip=document.createElement("button");
+  chip.className="filter-chip"+(cat==="All"?" active":"");
+  chip.textContent=cat;
+  chip.addEventListener("click",()=>{
+    activeCategory=cat;
+    document.querySelectorAll(".filter-chip").forEach(c=>c.classList.remove("active"));
+    chip.classList.add("active");
+    renderGrid();
+  });
+  filterRow.appendChild(chip);
+});
+
+// ---- product grid ----
+function renderGrid(){
+  const grid=document.getElementById("product-grid");
+  grid.innerHTML="";
+  const items = activeCategory==="All" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===activeCategory);
+  items.forEach(p=>{
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=`
+      <div class="swatch" style="background:${p.swatch};">
+        <button class="wish-btn" data-id="${p.id}">&#9825;</button>
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat}</div>
+        <h3 class="card-name">${p.name}</h3>
+        <p class="card-price">$${p.price}</p>
+        <button class="add-btn" data-id="${p.id}">Add to Bag</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll(".wish-btn").forEach(btn=>{
+    const id=Number(btn.dataset.id);
+    btn.classList.toggle("active", wishlist.has(id));
+    btn.innerHTML = wishlist.has(id) ? "&#9829;" : "&#9825;";
+    btn.addEventListener("click",()=>{
+      if(wishlist.has(id)) wishlist.delete(id); else wishlist.add(id);
+      renderGrid();
+    });
+  });
+  grid.querySelectorAll(".add-btn").forEach(btn=>{
+    const id=Number(btn.dataset.id);
+    btn.addEventListener("click",()=>{
+      cart[id]=(cart[id]||0)+1;
+      btn.textContent="Added ✓";
+      btn.classList.add("added");
+      setTimeout(()=>{btn.textContent="Add to Bag";btn.classList.remove("added");},900);
+      renderCart();
+    });
+  });
+}
+renderGrid();
+
+// ---- cart drawer ----
+function renderCart(){
+  const wrap=document.getElementById("drawer-items");
+  const ids=Object.keys(cart).filter(id=>cart[id]>0);
+  const count=Object.values(cart).reduce((a,b)=>a+b,0);
+  const countEl=document.getElementById("cart-count");
+  countEl.textContent=count;
+  countEl.style.display = count>0 ? "flex" : "none";
+
+  if(!ids.length){
+    wrap.innerHTML='<div class="empty-cart">Your bag is empty.</div>';
+    document.getElementById("subtotal").textContent="$0";
+    document.getElementById("checkout-btn").disabled=true;
+    return;
+  }
+
+  wrap.innerHTML="";
+  let subtotal=0;
+  ids.forEach(idStr=>{
+    const id=Number(idStr);
+    const p=PRODUCTS.find(x=>x.id===id);
+    const qty=cart[id];
+    subtotal += p.price*qty;
+    const row=document.createElement("div");
+    row.className="cart-row";
+    row.innerHTML=`
+      <div class="cart-swatch" style="background:${p.swatch};"></div>
+      <div class="cart-info">
+        <div class="name">${p.name}</div>
+        <div class="price">$${p.price}</div>
+        <div class="qty-row">
+          <button class="qty-btn" data-act="dec" data-id="${id}">&minus;</button>
+          <span class="qty-val">${qty}</span>
+          <button class="qty-btn" data-act="inc" data-id="${id}">+</button>
+          <button class="remove-btn" data-id="${id}">Remove</button>
+        </div>
+      </div>`;
+    wrap.appendChild(row);
+  });
+
+  document.getElementById("subtotal").textContent="$"+subtotal.toLocaleString();
+  document.getElementById("checkout-btn").disabled=false;
+
+  wrap.querySelectorAll(".qty-btn").forEach(btn=>{
+    const id=Number(btn.dataset.id);
+    btn.addEventListener("click",()=>{
+      cart[id] += btn.dataset.act==="inc" ? 1 : -1;
+      if(cart[id]<=0) delete cart[id];
+      renderCart();
+    });
+  });
+  wrap.querySelectorAll(".remove-btn").forEach(btn=>{
+    const id=Number(btn.dataset.id);
+    btn.addEventListener("click",()=>{ delete cart[id]; renderCart(); });
+  });
+}
+renderCart();
+
+document.getElementById("cart-open").addEventListener("click",()=>{
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+});
+function closeDrawer(){
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+document.getElementById("drawer-close").addEventListener("click",closeDrawer);
+document.getElementById("overlay").addEventListener("click",closeDrawer);
+
+document.getElementById("checkout-btn").addEventListener("click",()=>{
+  const count=Object.values(cart).reduce((a,b)=>a+b,0);
+  document.getElementById("modal-text").textContent=
+    `Thank you — your order of ${count} item${count===1?"":"s"} has been received. This is a demo checkout, so nothing was actually charged.`;
+  cart={};
+  renderCart();
+  closeDrawer();
+  document.getElementById("modal-overlay").classList.add("show");
+});
+document.getElementById("modal-close").addEventListener("click",()=>{
+  document.getElementById("modal-overlay").classList.remove("show");
+});
+</script>
+</body>
+</html>
